@@ -1,0 +1,133 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "cloudflare-api-mcp-dev",
+	"account_id": "6702657b6aa048cf3081ff3ff3c9c52f",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-01-12",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"logs": {
+			"enabled": true
+		},
+		"traces": {
+			"enabled": true
+		}
+	},
+	"vars": {
+		"CLOUDFLARE_API_BASE": "https://api.cloudflare.com/client/v4",
+		"OPENAPI_SPEC_URL": "https://raw.githubusercontent.com/cloudflare/api-schemas/main/openapi.json"
+	},
+	"worker_loaders": [
+		{
+			"binding": "LOADER"
+		}
+	],
+	"services": [
+		{
+			"binding": "GLOBAL_OUTBOUND",
+			"service": "cloudflare-api-mcp-dev",
+			"entrypoint": "GlobalOutbound"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "OAUTH_KV","id": "c46a7729981e415b9fff8012c0fbda40",
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "SPEC_BUCKET",
+			"bucket_name": "mcp-spec","preview_bucket_name": "mcp-spec"
+		}
+	],
+	"triggers": {
+		"crons": ["0 0 * * *"]
+	},
+	"dev": {
+		"port": 2529
+	},
+	"env": {
+		"staging": {
+			"name": "cloudflare-api-mcp-staging",
+			"routes": [
+				{
+					"pattern": "staging.mcp.cloudflare.com",
+					"custom_domain": true
+				}
+			],
+			"worker_loaders": [
+				{
+					"binding": "LOADER"
+				}
+			],
+			"services": [
+				{
+					"binding": "GLOBAL_OUTBOUND",
+					"service": "cloudflare-api-mcp-staging",
+					"entrypoint": "GlobalOutbound"
+				}
+			],
+			"kv_namespaces": [
+				{
+					"binding": "OAUTH_KV",
+					"id":"cd658e2801ac4ae6b18082e375f176a3"
+				}
+			],
+			"r2_buckets": [
+				{
+					"binding": "SPEC_BUCKET",
+					"bucket_name": "mcp-spec-staging"
+				}
+			],
+			"triggers": {
+				"crons": ["0 0 * * *"]
+			},
+			"vars": {
+				"CLOUDFLARE_API_BASE": "https://api.cloudflare.com/client/v4",
+		"OPENAPI_SPEC_URL": "https://raw.githubusercontent.com/cloudflare/api-schemas/main/openapi.json"
+			}
+		},
+		"production": {
+			"name": "cloudflare-api-mcp",
+			"routes": [
+				{
+					"pattern": "mcp.cloudflare.com",
+					"custom_domain": true
+				}
+			],
+			"worker_loaders": [
+				{
+					"binding": "LOADER"
+				}
+			],
+			"services": [
+				{
+					"binding": "GLOBAL_OUTBOUND",
+					"service": "cloudflare-api-mcp",
+					"entrypoint": "GlobalOutbound"
+				}
+			],
+			"kv_namespaces": [
+				{
+					"binding": "OAUTH_KV",
+					"id": "c7d4e4f11dfe41e6a22228aa838a14f1"
+				}
+			],
+			"r2_buckets": [
+				{
+					"binding": "SPEC_BUCKET",
+					"bucket_name": "mcp-spec-production"
+				}
+			],
+			"triggers": {
+				"crons": ["0 0 * * *"]
+			},
+			"vars": {
+				"CLOUDFLARE_API_BASE": "https://api.cloudflare.com/client/v4",
+		"OPENAPI_SPEC_URL": "https://raw.githubusercontent.com/cloudflare/api-schemas/main/openapi.json"
+			}
+		}
+	}
+}
